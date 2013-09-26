@@ -1,4 +1,4 @@
 schoolware
 ==========
 
-School maleware
+School malware
