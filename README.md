@@ -18,14 +18,14 @@ service by registering it with [svchost](http://en.wikipedia.org/wiki/Svchost).
 
     C:>schoolware --scenario=net --net-ports=123456 install
     
-`install` command will register the `schoolware` binary while other flags (like `--scenario` and `--net-ports` above)
-will be used during service's start-up. Once the service is registered, start-up flags cannot be altered. 
+`install` command will register the `schoolware` binary with svchost, while specified flags (`--scenario` and `--net-ports` in the example above)
+will be used during service's start-up. Once the service is registered, start-up flags cannot be altered.
 
-To start the service in the background, issue the following command:
+To start the previously installed service in the background, issue the following command:
 
     C:>schoolware start
     
-Please note, due to limitations of svchost, schoolware binary has to be located on start-up disk (C: drive).
+Please note, due to limitations of svchost, schoolware binary has to be located on a start-up disk (usually the C: drive).
 
 In order to stop and remove the service, use the `stop` and `remove` commands respectively.
 After the service has been removed, it can be registered again with different start-up parameters.
