@@ -5,7 +5,6 @@ import (
   "flag"
   "fmt"
   "github.com/foi-oss/schoolware/scenarios"
-  "log"
   "os"
   "os/user"
   "strings"
@@ -39,7 +38,6 @@ func start(c *stdservice.Config) {
   l.Info("schoolware started")
 
   if len(*scenario) == 0 {
-    fmt.Fprintf(os.Stderr, "no scenario specified")
     l.Error("no scenario specified")
     return
   }
@@ -58,14 +56,13 @@ func start(c *stdservice.Config) {
       err := s.Run(c)
       if err != nil {
         l.Error("scenario failed with: " + err.Error())
-        log.Panicln("scenario failed with:", err.Error())
       }
 
       return
     }
   }
 
-  fmt.Fprintf(os.Stderr, "unknown scenario specified")
+  l.Error("unknown scenario specified")
 }
 
 func stop(c *stdservice.Config) {
@@ -87,9 +84,10 @@ func usage() {
   }
   fmt.Fprintln(os.Stderr, "\nOptions for each scenario are prefixed with its name.")
   fmt.Fprintln(os.Stderr, "\nCommands:")
-  fmt.Fprintln(os.Stderr, "  run\t\timmediately run specified scenario\n"+
-    "  install\tinstall background service\n"+
-    "  start\t\tstart previously installed service\n"+
-    "  stop\t\tstops the service\n"+
-    "  remove\tremoves schoolware service from the systems")
+  fmt.Fprintln(os.Stderr, ` 
+  run     immediately run specified scenario
+  install install background service
+  start   start previously installed service
+  stop    stops the service
+  remove  removes schoolware service from the systems`)
 }
