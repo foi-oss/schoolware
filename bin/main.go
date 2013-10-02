@@ -27,7 +27,7 @@ func main() {
   stdservice.Run(&stdservice.Config{
     Name:            "schoolware",
     DisplayName:     "Schoolware",
-    LongDescription: "School maleware service",
+    LongDescription: "School malware service",
     Start:           start,
     Stop:            stop,
     Args:            args,
