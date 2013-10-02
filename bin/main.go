@@ -7,20 +7,22 @@ import (
   "github.com/foi-oss/schoolware/scenarios"
   "log"
   "os"
+  "os/user"
   "strings"
 )
 
 var (
   // command line flag
   scenario = flag.String("scenario", "", "scenario to run")
-
-  // command line flag
-  serviceCommand = flag.String("service", "start|stop", "control background service")
+  homedir  = flag.String("homedir", "~", "home directory")
 )
 
 func main() {
   flag.Usage = usage
   flag.Parse()
+
+  u, _ := user.Current()
+  args := strings.Join(os.Args[1:len(os.Args)-1], " ") + " -homedir=\"" + u.HomeDir + "\""
 
   stdservice.Run(&stdservice.Config{
     Name:            "schoolware",
@@ -28,62 +30,37 @@ func main() {
     LongDescription: "School maleware service",
     Start:           start,
     Stop:            stop,
-    Args:            strings.Join(os.Args[1:], " "),
+    Args:            args,
   })
-
-  /*
-     s, err := service.NewService("schoolware",
-       "Schoolware",
-       "School maleware service")
-     if err != nil {
-       fmt.Fprintf(os.Stderr, "unable to create service: %s", err)
-     }
-
-     if len(flag.Args()) >= 1 {
-       switch flag.Arg(0) {
-       case "install":
-         if err := s.Install(); err != nil {
-           fmt.Fprintf(os.Stderr, "failed to install: %s", err)
-           return
-         }
-       case "remove":
-         s.Remove()
-       case "run":
-         run()
-       case "start":
-         if err := s.Start(); err != nil {
-           fmt.Fprintf(os.Stderr, "failed to start: %s", err)
-           return
-         }
-       case "stop":
-         s.Stop()
-       }
-
-       return
-     }
-
-     err = s.Run(func() error {
-       run()
-       return nil
-     }, func() error {
-       return nil
-     })
-     if err != nil {
-       s.Error(err.Error())
-     }
-  */
 }
 
 func start(c *stdservice.Config) {
+  l := c.Logger()
+  l.Info("schoolware started")
+
   if len(*scenario) == 0 {
     fmt.Fprintf(os.Stderr, "no scenario specified")
+    l.Error("no scenario specified")
     return
+  }
+
+  if *homedir == "~" {
+    u, _ := user.Current()
+    scenarios.HomeDir = u.HomeDir
+  } else {
+    scenarios.HomeDir = *homedir
   }
 
   for _, s := range scenarios.All {
     if s.Name == *scenario {
-      log.Println("Scenario", *scenario, "started")
-      s.Run()
+      l.Info(fmt.Sprintf("scenario %s started", *scenario))
+
+      err := s.Run(c)
+      if err != nil {
+        l.Error("scenario failed with: " + err.Error())
+        log.Panicln("scenario failed with:", err.Error())
+      }
+
       return
     }
   }
@@ -92,16 +69,27 @@ func start(c *stdservice.Config) {
 }
 
 func stop(c *stdservice.Config) {
-
+  l := c.Logger()
+  l.Info("schoolware is shutting down")
 }
 
 // usage prints list of known command-line options and scenarion descriptions
 func usage() {
   fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
+  fmt.Fprintf(os.Stderr, "  %s [--scenario=net|files|... OPTIONS] COMMAND\n\n", os.Args[0])
+
+  fmt.Fprintln(os.Stderr, "Options:")
   flag.PrintDefaults()
 
-  fmt.Fprintf(os.Stderr, "\nKnown scenarios:\n")
+  fmt.Fprintln(os.Stderr, "\nScenarios:")
   for _, s := range scenarios.All {
     fmt.Fprintf(os.Stderr, "  %s: %s\n", s.Name, s.Description)
   }
+  fmt.Fprintln(os.Stderr, "\nOptions for each scenario are prefixed with its name.")
+  fmt.Fprintln(os.Stderr, "\nCommands:")
+  fmt.Fprintln(os.Stderr, "  run\t\timmediately run specified scenario\n"+
+    "  install\tinstall background service\n"+
+    "  start\t\tstart previously installed service\n"+
+    "  stop\t\tstops the service\n"+
+    "  remove\tremoves schoolware service from the systems")
 }
