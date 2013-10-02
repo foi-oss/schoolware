@@ -13,13 +13,13 @@ To run a scenario, specify it's name and, optionally, any additional arguments i
     
 `run` command will immediately run the scenario in the foreground.
 
-To see a list of all installed scenarios, use `--help` flag.
-
-In order to run a scenario in background you first have to install the `schoolware` service by registering it with [svchost](http://en.wikipedia.org/wiki/Svchost).
+In order to run a scenario in background you first have to install the `schoolware`
+service by registering it with [svchost](http://en.wikipedia.org/wiki/Svchost).
 
     C:>schoolware --scenario=net --net-ports=123456 install
     
-`install` command will register the `schoolware` binary, other flags provided with `install` command (like `--scenario` and `--net-ports` above) will be used during service's start-up. Once the service is register, start-up flags cannot be changed. 
+`install` command will register the `schoolware` binary while other flags (like `--scenario` and `--net-ports` above)
+will be used during service's start-up. Once the service is registered, start-up flags cannot be altered. 
 
 To start the service in the background, issue the following command:
 
@@ -27,7 +27,10 @@ To start the service in the background, issue the following command:
     
 Please note, due to limitations of svchost, schoolware binary has to be located on start-up disk (C: drive).
 
-In order to stop and remove the service, use the `stop` and `remove` commands respectively. After the service has been removed, it can be registered again with different start-up parameters.
+In order to stop and remove the service, use the `stop` and `remove` commands respectively.
+After the service has been removed, it can be registered again with different start-up parameters.
+
+For list of all scenarios and available options, consult built-in `--help`.
 
 ## Building
 
