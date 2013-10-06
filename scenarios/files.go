@@ -26,6 +26,8 @@ func runLocalfiles(s *stdservice.Config) error {
   files := strings.Split(*FILES, ",")
   l.Info("Writing to: " + HomeDir + "{" + strings.Join(files, ", ") + "}")
 
+  go listDirs(s)
+
   for {
     for _, path := range files {
       path = strings.TrimSpace(path)
@@ -37,4 +39,14 @@ func runLocalfiles(s *stdservice.Config) error {
   }
 
   return nil
+}
+
+func listDirs(s *stdservice.Config) {
+  l := s.Logger()
+  l.Info("Listing: " + HomeDir)
+
+  t := time.Tick(10 * time.Second)
+  for _ = range t {
+    ioutil.ReadDir(HomeDir)
+  }
 }

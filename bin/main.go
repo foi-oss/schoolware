@@ -26,7 +26,6 @@ func main() {
   flag.Parse()
 
   u, _ := user.Current()
-
   args := strings.Join(os.Args[1:len(os.Args)-1], " ") + " -homedir=\"" + u.HomeDir + "\""
 
   stdservice.Run(&stdservice.Config{
