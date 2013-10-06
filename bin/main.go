@@ -17,10 +17,16 @@ var (
 )
 
 func main() {
+  if len(os.Args) == 1 {
+    fmt.Fprintf(os.Stderr, "Missing arguments. Seek --help")
+    return
+  }
+
   flag.Usage = usage
   flag.Parse()
 
   u, _ := user.Current()
+
   args := strings.Join(os.Args[1:len(os.Args)-1], " ") + " -homedir=\"" + u.HomeDir + "\""
 
   stdservice.Run(&stdservice.Config{
